@@ -10,12 +10,26 @@
  ***************************************************************************************************************/
 public class InvoiceGenerator {
 
-    private static final double MINIMUM_COST_PER_KM = 10.0;
-    private static final int COST_PER_TIME = 1;
-    private static final double MINIMUM_FARE = 5;
+    private static final int NORMALRIDE = 1;
+    private static final int PREMIUMRIDE = 2;
+    private static double MINIMUM_COST_PER_KM = 0.0;
+    private static int COST_PER_TIME = 0;
+    private static double MINIMUM_FARE = 0;
 
 
-    public double calculateFare(double distance, int time) {
+    public double calculateFare(double distance, int time , int option) {
+
+        if(option == NORMALRIDE) {
+            MINIMUM_COST_PER_KM = 10.0;
+            COST_PER_TIME = 1;
+            MINIMUM_FARE = 5;
+        }
+
+        else if(option == PREMIUMRIDE) {
+            MINIMUM_COST_PER_KM = 15.0;
+            COST_PER_TIME = 2;
+            MINIMUM_FARE = 20;
+        }
 
         double totalFare = distance * MINIMUM_COST_PER_KM + time * COST_PER_TIME;
         return Math.max(totalFare, MINIMUM_FARE);
@@ -27,11 +41,11 @@ public class InvoiceGenerator {
      *
      **********************************************************************************************************/
 
-    public double calculateTotalFare(Ride[] rides) {
+    public double calculateTotalFare(Ride[] rides, int option) {
 
         double totalFare = 0.0;
         for(Ride ride : rides) {
-            totalFare += this.calculateFare(ride.distance, ride.time);
+            totalFare += this.calculateFare(ride.distance, ride.time, option);
         }
         return totalFare;
     }
@@ -44,10 +58,10 @@ public class InvoiceGenerator {
      *
      **********************************************************************************************************/
 
-    public InvoiceSummary calculateFareSummary(Ride[] rides) {
+    public InvoiceSummary calculateFareSummary(Ride[] rides, int option) {
         double totalFare = 0.0;
         for(Ride ride : rides) {
-            totalFare += this.calculateFare(ride.distance, ride.time);
+            totalFare += this.calculateFare(ride.distance, ride.time, option);
         }
         return new InvoiceSummary(rides.length, totalFare);
     }

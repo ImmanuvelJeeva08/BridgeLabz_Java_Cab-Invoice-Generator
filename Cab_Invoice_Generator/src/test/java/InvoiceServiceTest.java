@@ -6,6 +6,9 @@ import java.util.Hashtable;
 
 public class InvoiceServiceTest {
 
+    private static final int NORMALRIDE = 1;
+    private static final int PREMIUMRIDE = 2;
+
     InvoiceGenerator invoiceGenerator = null;
 
     @BeforeEach
@@ -23,8 +26,14 @@ public class InvoiceServiceTest {
     public void givenDistanceAndTime_ShouldReturnTotalFare() {
         double distance = 2.0;
         int time = 5;
-        double fare = invoiceGenerator.calculateFare(distance,time);
-        Assertions.assertEquals(25, fare);
+        int option = NORMALRIDE;
+
+        double fare = invoiceGenerator.calculateFare(distance, time, option);
+
+        if(option == NORMALRIDE)
+            Assertions.assertEquals(25, fare);
+        else if(option == PREMIUMRIDE)
+            Assertions.assertEquals(40, fare);
     }
 
     /***********************************************************************************************************
@@ -37,8 +46,14 @@ public class InvoiceServiceTest {
     public void givenLessDistanceAndTime_ShouldReturnMinimumFare() {
         double distance = 0.1;
         int time = 1;
-        double fare = invoiceGenerator.calculateFare(distance,time);
-        Assertions.assertEquals(5, fare);
+        int option = PREMIUMRIDE;
+
+        double fare = invoiceGenerator.calculateFare(distance, time, option);
+
+        if(option == NORMALRIDE)
+            Assertions.assertEquals(5, fare);
+        else if(option == PREMIUMRIDE)
+            Assertions.assertEquals(20, fare);
     }
 
     /************************************************************************************************************
@@ -49,11 +64,17 @@ public class InvoiceServiceTest {
 
     @Test
     public void givenMultipleRides_ShouldReturnTotalFare() {
+        int option = PREMIUMRIDE;
+
         Ride[] rides = {    new Ride(2.0, 5),
                             new Ride(0.1, 1)    };
 
-        double fare = invoiceGenerator.calculateTotalFare(rides);
-        Assertions.assertEquals(30, fare);
+        double fare = invoiceGenerator.calculateTotalFare(rides, option);
+
+        if(option == NORMALRIDE)
+            Assertions.assertEquals(30, fare);
+        else if(option == PREMIUMRIDE)
+            Assertions.assertEquals(60, fare);
     }
 
     /************************************************************************************************************
@@ -65,12 +86,21 @@ public class InvoiceServiceTest {
 
     @Test
     public void givenMultipleRides_ShouldReturnInvoiceSummary() {
-        Ride[] rides = {    new Ride(2.0, 5),
-                            new Ride(0.1, 1)    };
+        int option = PREMIUMRIDE;
 
-        InvoiceSummary summary = invoiceGenerator.calculateFareSummary(rides);
-        InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 30);
-        Assertions.assertEquals(expectdInvoiceSummary, summary);
+        Ride[] rides = { new Ride(2.0, 5),
+                new Ride(0.1, 1) };
+
+        InvoiceSummary summary = invoiceGenerator.calculateFareSummary(rides, option);
+
+        if(option == NORMALRIDE) {
+            InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 30);
+            Assertions.assertEquals(expectdInvoiceSummary, summary);
+        }
+        else if(option == PREMIUMRIDE) {
+            InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 60);
+            Assertions.assertEquals(expectdInvoiceSummary, summary);
+        }
     }
 
     /***********************************************************************************************************
@@ -86,6 +116,8 @@ public class InvoiceServiceTest {
     public void givenUserID_ShouldReturnInvoiceSummary() {
         Hashtable<Integer, Ride[]> htable = new Hashtable<>();
 
+        int option = PREMIUMRIDE;
+
         int userID1 = 1;
         Ride[] ride1 = { new Ride(2.0, 5),
                 new Ride(0.1, 1) };
@@ -99,9 +131,15 @@ public class InvoiceServiceTest {
         int userID = 2;
 
         if(htable.containsKey(userID)) {
-            InvoiceSummary summary = invoiceGenerator.calculateFareSummary(htable.get(userID));
-            InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 61);
-            Assertions.assertEquals(expectdInvoiceSummary, summary);
+            InvoiceSummary summary = invoiceGenerator.calculateFareSummary(htable.get(userID), option);
+            if(option == NORMALRIDE) {
+                InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 61);
+                Assertions.assertEquals(expectdInvoiceSummary, summary);
+            }
+            else if(option == PREMIUMRIDE) {
+                InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 100);
+                Assertions.assertEquals(expectdInvoiceSummary, summary);
+            }
         }
     }
 }
