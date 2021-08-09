@@ -53,4 +53,21 @@ public class InvoiceServiceTest {
         double fare = invoiceGenerator.calculateTotalFare(rides);
         Assertions.assertEquals(30, fare);
     }
+
+    /************************************************************************************************************
+     *
+     * Purpose : Given distance and time, calculate the aggregate total for all the rides
+     *           Finally calculate the average fare per ride
+     *
+     ***********************************************************************************************************/
+
+    @Test
+    public void givenMultipleRides_ShouldReturnInvoiceSummary() {
+        Ride[] rides = {    new Ride(2.0, 5),
+                            new Ride(0.1, 1)    };
+
+        InvoiceSummary summary = invoiceGenerator.calculateFareSummary(rides);
+        InvoiceSummary expectdInvoiceSummary = new InvoiceSummary(2, 30);
+        Assertions.assertEquals(expectdInvoiceSummary, summary);
+    }
 }
